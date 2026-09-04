@@ -1,13 +1,16 @@
 {
   "banners": {
-    "home": {
-      "type": "video",
-      "url": "https://res.cloudinary.com/dqdml5pq2/video/upload/v1766153195/prem-properties/fyokadjojrcwpwof5whl.mp4",
-      "title": "Find Your Dream Home",
-      "subtitle": "Discover premium residential and commercial landmarks",
-      "titleColor": "#FFFFFF",
-      "tags": ""
-    },
+    "home": [
+      {
+        "type": "video",
+        "url": "https://res.cloudinary.com/dqdml5pq2/video/upload/v1766153195/prem-properties/fyokadjojrcwpwof5whl.mp4",
+        "title": "Find Your Dream Home",
+        "subtitle": "Discover premium residential and commercial landmarks",
+        "titleColor": "#FFFFFF",
+        "tags": "",
+        "position": "center"
+      }
+    ],
     "about": {
       "type": "image",
       "url": "https://res.cloudinary.com/dqdml5pq2/image/upload/v1766242509/prem-properties/a0nxtmqzzj35q4bbq0rh.jpg",
@@ -123,10 +126,10 @@
     }
   ],
   "contact": {
-    "phone": "+91 888 557 5557",
-    "email": "info@PREMproperties.com",
-    "address": "JMR Jagini Plaza, 2nd Floor, Kothapet, Hyderabad.",
-    "whatsapp": "https://wa.me/916305203756"
+    "phone": "+91 89772 28322",
+    "email": "premproperties1609@gmail.com",
+    "address": "Kongara Kalan Hyderabad, Telangana 501510",
+    "whatsapp": "https://wa.me/918977228322"
   },
   "appearance": {
     "primaryColor": "#f2a602",
@@ -144,8 +147,7 @@
     "aboutText": "Building landmarks that redefine luxury living. Committed to excellence, innovation, and trust.",
     "copyright": "© 2024 PREM Properties. All rights reserved.",
     "social": {
-      "facebook": "duhfdfbjsdf",
-      "instagram": "",
+      "instagram": "https://www.instagram.com/premproperties16_09?igsi=MXZmdjltdmNuZjVvMA==",
       "twitter": "",
       "linkedin": ""
     }

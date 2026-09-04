@@ -34,7 +34,7 @@ export function middleware(request: NextRequest) {
         "font-src 'self' data: https://fonts.gstatic.com",
         "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com https://*.cloudinary.com",
         "media-src 'self' https://*.cloudinary.com blob:",
-        "frame-src 'self' https://widget.cloudinary.com",
+        "frame-src 'self' https://widget.cloudinary.com https://upload-widget.cloudinary.com https://www.google.com",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",

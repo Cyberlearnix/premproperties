@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "../lib/supabase";
 
 export default function PropertyEnquiry({ propertyTitle, initialViews }: { propertyTitle: string, initialViews: number }) {
     const [formState, setFormState] = useState({ name: "", phone: "", email: "" });
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
     const [views, setViews] = useState(initialViews);
 
     // Simulate real-time view increment
@@ -25,26 +25,29 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
         setStatus("submitting");
 
         try {
-            const { error } = await supabase
-                .from("inquiries")
-                .insert([{
-                    id: Date.now().toString(),
+            const res = await fetch("/api/inquiries", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
                     name: formState.name,
                     phone: formState.phone,
                     email: formState.email,
                     property: propertyTitle,
-                    message: `Inquiry for ${propertyTitle}`,
-                    date: new Date().toISOString(),
-                    status: 'new'
-                }]);
+                    message: `Inquiry for ${propertyTitle}`
+                })
+            });
 
-            if (error) throw error;
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to send enquiry");
+            }
 
             setStatus("success");
             setFormState({ name: "", phone: "", email: "" });
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error sending enquiry:", error);
-            alert("Failed to send enquiry. Please try again.");
+            setErrorMessage(error.message || "Failed to send enquiry. Please try again.");
             setStatus("idle");
         }
     };
@@ -110,6 +113,9 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
                             placeholder="your@email.com"
                         />
                     </div>
+                    {errorMessage && (
+                        <p className="text-red-500 text-sm font-bold text-center">{errorMessage}</p>
+                    )}
                     <button
                         disabled={status === "submitting"}
                         className="w-full py-4 bg-[var(--primary)] text-white font-bold uppercase tracking-wider rounded-md hover:bg-black transition-colors shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
@@ -121,7 +127,7 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
 
             <div className="mt-6 pt-6 border-t border-gray-100 text-center">
                 <p className="text-sm text-gray-400 mb-2">Or call us directly at</p>
-                <a href="tel:+916305203756" className="text-xl font-bold hover:text-[var(--primary)] transition-colors block">+91 888 557 5557</a>
+                <a href="tel:+918977228322" className="text-xl font-bold hover:text-[var(--primary)] transition-colors block">+91 89772 28322</a>
             </div>
         </div>
     );

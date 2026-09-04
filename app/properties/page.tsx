@@ -15,9 +15,12 @@ async function getData() {
 }
 
 export const metadata = {
-    title: "Properties | PREM",
-    description: "Explore our premium residential and commercial properties.",
+    title: "Properties for Sale | Kongara Kalan, Future City & Adibatla | PREM Properties",
+    description: "Browse premium residential plots, villas, and commercial properties for sale near Kongara Kalan, Future City, Adibatla, and Meerkanpet in Hyderabad's fastest-growing corridor.",
+    keywords: "properties near Future City, plots in Kongara Kalan, Adibatla real estate, Meerkanpet plots, ORR Exit 13 properties",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function PropertiesPage() {
     const { propertiesData, companyData } = await getData();

@@ -84,6 +84,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
+        // Notify the admin inbox; a failed email must not fail the submission
+        const { sendInquiryNotificationEmail } = await import("../../lib/email");
+        sendInquiryNotificationEmail(newInquiry).catch((err) =>
+            console.error("Failed to send inquiry notification email:", err)
+        );
+
         return NextResponse.json({ success: true, inquiry: data });
     } catch (error: any) {
         console.error("Inquiry submission error:", error);

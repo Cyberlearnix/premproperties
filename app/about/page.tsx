@@ -1,14 +1,17 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TeamGrid from "../components/TeamGrid";
+import AnimatedCounter from "../components/AnimatedCounter";
 import { fetchCompanyData } from "../lib/data";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About | PREM Properties - Kongara Kalan Real Estate",
-  description: "Learn about PREM Properties in Kongara Kalan, a rapidly developing industrial hub near Hyderabad. Strategic location near ORR Exit 13, Foxconn, Hardware Park, and major job creation zones.",
-  keywords: ["Kongara Kalan Real Estate", "Foxconn Hyderabad", "Hardware Park Hyderabad", "ORR Exit 13 Plots", "Ranga Reddy IDOC", "Industrial Growth Hyderabad"],
+  description: "Learn about PREM Properties in Kongara Kalan, a rapidly developing industrial hub near Hyderabad, serving Future City, Adibatla, and Meerkanpet. Strategic location near ORR Exit 13, Foxconn, Hardware Park, and major job creation zones.",
+  keywords: ["Kongara Kalan Real Estate", "Foxconn Hyderabad", "Hardware Park Hyderabad", "ORR Exit 13 Plots", "Ranga Reddy IDOC", "Industrial Growth Hyderabad", "Future City Hyderabad", "Adibatla Real Estate", "Meerkanpet Plots"],
 };
+
+export const dynamic = "force-dynamic";
 
 async function getData() {
   return fetchCompanyData();
@@ -97,7 +100,9 @@ export default async function AboutPage() {
           <div className="grid grid-cols-2 gap-6">
             {company.stats.map((stat) => (
               <div key={stat.label} className="bg-[var(--secondary-bg)] p-8 rounded-lg text-center border border-gray-100">
-                <div className="text-4xl font-bold text-[var(--primary)] mb-2">{stat.value}</div>
+                <div className="text-4xl font-bold text-[var(--primary)] mb-2">
+                  <AnimatedCounter value={stat.value} />
+                </div>
                 <div className="text-sm font-bold uppercase text-gray-400">{stat.label}</div>
               </div>
             ))}

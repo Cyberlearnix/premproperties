@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabase";
 import { hasPermission } from "../../../lib/auth";
+import { hashPassword } from "../../../lib/password";
 
 export async function GET() {
-    if (!await hasPermission("Properties")) {
+    if (!await hasPermission("Members")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -21,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-    if (!await hasPermission("Properties")) {
+    if (!await hasPermission("Members")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -44,12 +45,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Member with this email already exists" }, { status: 400 });
         }
 
+        const hashedPassword = await hashPassword(password);
+
         const { data, error } = await supabase
             .from("members")
             .insert({
                 name,
                 email,
-                password, // Note: In production, password should be hashed
+                password: hashedPassword,
                 created_at: new Date().toISOString()
             })
             .select()
@@ -63,7 +66,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    if (!await hasPermission("Properties")) {
+    if (!await hasPermission("Members")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

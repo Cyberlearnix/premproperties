@@ -4,8 +4,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
+const defaultBanner = {
+  type: "video",
+  url: "https://videos.pexels.com/video-files/5752729/5752729-hd_1920_1080_25fps.mp4",
+  title: "Find Your Dream Home",
+  subtitle: "Luxury properties in prime locations"
+};
+
+// Accepts either a single banner object (legacy) or an array of banners (slideshow)
+function normalizeBanners(input: any): any[] {
+  if (Array.isArray(input) && input.length > 0) return input;
+  if (input && typeof input === "object") return [input];
+  return [defaultBanner];
+}
+
 export default function Hero({ banner: initialBanner }: { banner?: any }) {
-  const [banner, setBanner] = useState(initialBanner);
+  const [slides, setSlides] = useState(normalizeBanners(initialBanner));
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const fetchLive = async () => {
@@ -16,27 +31,35 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
         .single();
 
       if (data && !error) {
-        setBanner(data.data.banners.home);
+        setSlides(normalizeBanners(data.data.banners?.home));
       }
     };
     fetchLive();
   }, []);
-  // Use banner from settings or fallback to default
-  const defaultBanner = {
-    type: "video",
-    url: "https://videos.pexels.com/video-files/5752729/5752729-hd_1920_1080_25fps.mp4",
-    title: "Find Your Dream Home",
-    subtitle: "Luxury properties in prime locations"
-  };
 
-  const currentBanner = banner || defaultBanner;
+  // Auto-advance slides when there's more than one; resets whenever the slide changes
+  // (manually or automatically) so users get a full interval before the next auto-advance
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [slides.length, index]);
+
+  // Keep index in range if slides shrink
+  useEffect(() => {
+    if (index >= slides.length) setIndex(0);
+  }, [slides, index]);
+
+  const currentBanner = slides[index] || defaultBanner;
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-gray-900">
       {/* BACKGROUND */}
       <AnimatePresence mode="popLayout">
         <motion.div
-          key="hero-slide"
+          key={`hero-slide-${index}`}
           className="absolute inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -47,18 +70,21 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
           <div className="absolute inset-0 bg-black/30 z-10" />
           {currentBanner.type === "video" ? (
             <video
+              key={currentBanner.url}
               src={currentBanner.url}
               autoPlay
               muted
               loop
               playsInline
               className="w-full h-full object-cover"
+              style={{ objectPosition: currentBanner.position || "center" }}
             />
           ) : (
             <img
               src={currentBanner.url}
               alt={currentBanner.title || "Luxury Home"}
               className="w-full h-full object-cover"
+              style={{ objectPosition: currentBanner.position || "center" }}
             />
           )}
         </motion.div>
@@ -109,6 +135,40 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
           </a>
         </motion.div>
       </div>
+
+      {/* PREV / NEXT ARROWS */}
+      {slides.length > 1 && (
+        <>
+          <button
+            aria-label="Previous slide"
+            onClick={() => setIndex((i) => (i - 1 + slides.length) % slides.length)}
+            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-[var(--primary)] hover:text-black transition-colors"
+          >
+            ‹
+          </button>
+          <button
+            aria-label="Next slide"
+            onClick={() => setIndex((i) => (i + 1) % slides.length)}
+            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-[var(--primary)] hover:text-black transition-colors text-xl"
+          >
+            ›
+          </button>
+        </>
+      )}
+
+      {/* SLIDE INDICATORS */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setIndex(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-[var(--primary)]" : "w-2 bg-white/50 hover:bg-white/80"}`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* SCROLL INDICATOR */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">

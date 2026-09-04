@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
+import AnimatedCounter from "./AnimatedCounter";
 
 export default function HomeAbout({ company: initialCompany }: { company: any }) {
     const [company, setCompany] = useState(initialCompany);
@@ -41,10 +42,18 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                             {company.aboutShort || "With over 15 years of experience, we have redefined the skyline of Hyderabad."}
                         </p>
 
+                        {company.mission && (
+                            <blockquote className="border-l-4 border-[var(--primary)] pl-5 mb-10 italic text-gray-500">
+                                "{company.mission}"
+                            </blockquote>
+                        )}
+
                         <div className="grid grid-cols-3 gap-8 mb-10">
                             {company.stats?.map((stat: any) => (
                                 <div key={stat.label}>
-                                    <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                                    <div className="text-3xl font-bold text-gray-900 mb-1">
+                                        <AnimatedCounter value={stat.value} />
+                                    </div>
                                     <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider font-sans">{stat.label}</div>
                                 </div>
                             ))}

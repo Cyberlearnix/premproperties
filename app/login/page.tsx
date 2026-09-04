@@ -111,6 +111,15 @@ export default function MemberLoginPage() {
                         Don't have a member account? <br />
                         <span className="text-black font-bold">Please contact your relationship manager.</span>
                     </div>
+
+                    <div className="mt-6 text-center">
+                        <Link
+                            href="/admin/login/"
+                            className="inline-block text-xs uppercase tracking-widest font-bold text-gray-400 hover:text-[var(--primary)] transition-colors"
+                        >
+                            Admin Login →
+                        </Link>
+                    </div>
                 </motion.div>
             </section>
 

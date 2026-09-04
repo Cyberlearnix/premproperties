@@ -11,12 +11,12 @@ export default function SettingsAdmin() {
     const [activeTab, setActiveTab] = useState("banners");
     const [settings, setSettings] = useState({
         banners: {
-            home: { type: "video", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "" },
+            home: [{ type: "video", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "", position: "center" }] as any[],
             about: { type: "image", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "" },
             properties: { type: "image", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "" },
             contact: { type: "image", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "" },
             gallery: { type: "image", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "" },
-        },
+        } as any,
         navigation: [
             { label: "", href: "" }
         ],
@@ -62,15 +62,30 @@ export default function SettingsAdmin() {
 
             if (error) throw error;
             if (data?.data) {
-                setSettings(prev => ({
-                    ...prev,
-                    ...data.data,
-                    propertyConfig: {
-                        categories: data.data.propertyConfig?.categories?.length > 0
-                            ? data.data.propertyConfig.categories
-                            : prev.propertyConfig.categories
-                    }
-                }));
+                setSettings(prev => {
+                    // Legacy data may store the home banner as a single object instead of a slideshow array
+                    const rawHome = data.data.banners?.home;
+                    const homeSlides = Array.isArray(rawHome)
+                        ? rawHome
+                        : rawHome
+                            ? [rawHome]
+                            : prev.banners.home;
+
+                    return {
+                        ...prev,
+                        ...data.data,
+                        banners: {
+                            ...prev.banners,
+                            ...data.data.banners,
+                            home: homeSlides
+                        },
+                        propertyConfig: {
+                            categories: data.data.propertyConfig?.categories?.length > 0
+                                ? data.data.propertyConfig.categories
+                                : prev.propertyConfig.categories
+                        }
+                    };
+                });
             }
         } catch (error) {
             console.error("Failed to fetch settings:", error);
@@ -121,6 +136,30 @@ export default function SettingsAdmin() {
                 },
             },
         });
+    };
+
+    const updateHomeSlide = (index: number, field: string, value: string) => {
+        const homeSlides = [...settings.banners.home];
+        homeSlides[index] = { ...homeSlides[index], [field]: value };
+        setSettings({ ...settings, banners: { ...settings.banners, home: homeSlides } });
+    };
+
+    const addHomeSlide = () => {
+        const homeSlides = [
+            ...settings.banners.home,
+            { type: "image", url: "", title: "", subtitle: "", titleColor: "#FFFFFF", tags: "", position: "center" },
+        ];
+        setSettings({ ...settings, banners: { ...settings.banners, home: homeSlides } });
+    };
+
+    const removeHomeSlide = (index: number) => {
+        if (settings.banners.home.length <= 1) {
+            alert("You must keep at least one hero slide.");
+            return;
+        }
+        if (!confirm("Remove this hero slide?")) return;
+        const homeSlides = settings.banners.home.filter((_: any, i: number) => i !== index);
+        setSettings({ ...settings, banners: { ...settings.banners, home: homeSlides } });
     };
 
     const updateNavItem = (index: number, field: string, value: string) => {
@@ -249,10 +288,135 @@ export default function SettingsAdmin() {
             <div className="space-y-8">
                 {activeTab === "banners" && (
                     <>
+                        {/* Home Hero Slideshow */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <h2 className="text-xl font-bold">Home Hero Slideshow</h2>
+                                    <p className="text-gray-500 text-sm mt-1">Add one or more slides (image or video). They rotate automatically on the homepage.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={addHomeSlide}
+                                    className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-[var(--primary)] hover:text-black transition-colors whitespace-nowrap"
+                                >
+                                    + Add Slide
+                                </button>
+                            </div>
+
+                            {settings.banners.home.map((slide: any, index: number) => (
+                                <div key={index} className="mb-8 pb-8 border-b border-gray-200 last:border-0 last:pb-0 last:mb-0">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold text-lg">Slide {index + 1}</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeHomeSlide(index)}
+                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                        >
+                                            🗑️ Remove
+                                        </button>
+                                    </div>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Type</label>
+                                            <select
+                                                value={slide.type}
+                                                onChange={(e) => updateHomeSlide(index, "type", e.target.value)}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                            >
+                                                <option value="image">Image</option>
+                                                <option value="video">Video</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">URL</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="url"
+                                                    value={slide.url}
+                                                    onChange={(e) => updateHomeSlide(index, "url", e.target.value)}
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                                />
+                                                <CloudinaryUpload
+                                                    onUploadSuccess={(url) => updateHomeSlide(index, "url", url)}
+                                                    buttonText="📸"
+                                                    resourceType={slide.type === "video" ? "video" : "image"}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Title</label>
+                                            <input
+                                                type="text"
+                                                value={slide.title}
+                                                onChange={(e) => updateHomeSlide(index, "title", e.target.value)}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Subtitle</label>
+                                            <input
+                                                type="text"
+                                                value={slide.subtitle}
+                                                onChange={(e) => updateHomeSlide(index, "subtitle", e.target.value)}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Title Color</label>
+                                            <div className="flex gap-4 items-center">
+                                                <input
+                                                    type="color"
+                                                    value={slide.titleColor || "#FFFFFF"}
+                                                    onChange={(e) => updateHomeSlide(index, "titleColor", e.target.value)}
+                                                    className="h-10 w-20 rounded cursor-pointer"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={slide.titleColor || "#FFFFFF"}
+                                                    onChange={(e) => updateHomeSlide(index, "titleColor", e.target.value)}
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-mono uppercase"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Image/Video Position</label>
+                                            <select
+                                                value={slide.position || "center"}
+                                                onChange={(e) => updateHomeSlide(index, "position", e.target.value)}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                            >
+                                                <option value="center">Center</option>
+                                                <option value="top">Top</option>
+                                                <option value="bottom">Bottom</option>
+                                                <option value="left">Left</option>
+                                                <option value="right">Right</option>
+                                                <option value="top left">Top Left</option>
+                                                <option value="top right">Top Right</option>
+                                                <option value="bottom left">Bottom Left</option>
+                                                <option value="bottom right">Bottom Right</option>
+                                            </select>
+                                            <p className="text-xs text-gray-400 mt-1">Controls which part of the media stays visible when it's cropped to fill the banner.</p>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Tags (comma separated)</label>
+                                            <input
+                                                type="text"
+                                                value={slide.tags || ""}
+                                                onChange={(e) => updateHomeSlide(index, "tags", e.target.value)}
+                                                placeholder="e.g. Luxury, Premium, Hyderabad"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
                         {/* Banners */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                             <h2 className="text-xl font-bold mb-6">Page Banners</h2>
-                            {Object.entries(settings.banners).map(([page, banner]) => (
+                            {Object.entries(settings.banners).filter(([page]) => page !== "home").map(([page, banner]: [string, any]) => (
                                 <div key={page} className="mb-8 pb-8 border-b border-gray-200 last:border-0">
                                     <h3 className="font-bold text-lg mb-4 capitalize">{page} Page</h3>
                                     <div className="grid md:grid-cols-2 gap-6">

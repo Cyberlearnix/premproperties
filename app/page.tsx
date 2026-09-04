@@ -10,8 +10,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "PREM Properties | Premium Real Estate in Kongara Kalan, Hyderabad",
-  description: "Invest in Kongara Kalan, Hyderabad's fastest-growing real estate hub. Near ORR Exit 13, Foxconn, and Hardware Park. Premium residential plots, villas, and apartments.",
-  keywords: ["Real Estate Hyderabad", "Kongara Kalan Plots", "Foxconn Hyderabad Projects", "Investment in Kongara Kalan", "Premium Villas Hyderabad"],
+  description: "Invest in Kongara Kalan, Hyderabad's fastest-growing real estate hub. Near ORR Exit 13, Foxconn, Hardware Park, Future City, and Adibatla. Premium residential plots, villas, and apartments.",
+  keywords: ["Real Estate Hyderabad", "Kongara Kalan Plots", "Foxconn Hyderabad Projects", "Investment in Kongara Kalan", "Premium Villas Hyderabad", "Properties near Future City", "Real Estate near Adibatla", "Plots near Meerkanpet"],
 };
 
 async function getData() {

@@ -119,6 +119,13 @@ export function checkRateLimit(identifier: string, maxRequests: number = 5, wind
     const now = Date.now();
     const record = rateLimitMap.get(identifier);
 
+    // Periodically evict expired entries so the map doesn't grow unbounded
+    if (rateLimitMap.size > 10000) {
+        for (const [key, value] of rateLimitMap) {
+            if (now > value.resetTime) rateLimitMap.delete(key);
+        }
+    }
+
     if (!record || now > record.resetTime) {
         // New window
         rateLimitMap.set(identifier, { count: 1, resetTime: now + windowMs });

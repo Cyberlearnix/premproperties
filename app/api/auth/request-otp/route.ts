@@ -41,17 +41,11 @@ export async function POST(request: Request) {
             await sendOTPEmail(user.email, otp);
         } catch (emailError) {
             console.error('Failed to send OTP email:', emailError);
-            // In dev mode, we still log it for convenience
-            if (process.env.NODE_ENV === 'development') {
-                console.log(`Fallback OTP for ${user.email}: ${otp}`);
-            }
         }
 
         return NextResponse.json({
             success: true,
-            message: 'OTP sent to your email',
-            // DEVELOPMENT ONLY - Remove in production!
-            devOTP: process.env.NODE_ENV === 'development' ? otp : undefined
+            message: 'OTP sent to your email'
         });
 
     } catch (error) {

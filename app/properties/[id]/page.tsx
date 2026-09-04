@@ -2,6 +2,8 @@ import { fetchPropertiesData } from "../../lib/data";
 import PropertyDetailClient from "./PropertyDetailClient";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
     const properties = await fetchPropertiesData();
     return properties.map((p: any) => ({ id: String(p.id) }));

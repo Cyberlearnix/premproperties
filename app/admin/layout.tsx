@@ -12,11 +12,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [user, setUser] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [company, setCompany] = useState<any>(null);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+    // Close the mobile sidebar whenever the route changes
+    useEffect(() => {
+        setMobileNavOpen(false);
+    }, [pathname]);
 
     const allNavItems = useMemo(() => [
         { label: "Dashboard", href: "/admin/", icon: "📊", permission: "all" },
         { label: "Users", href: "/admin/users/", icon: "🔑", role: "super_admin" },
-        { label: "Members", href: "/admin/members/", icon: "🎖️", permission: "Properties" },
+        { label: "Members", href: "/admin/members/", icon: "🎖️", permission: "Members" },
         { label: "Properties", href: "/admin/properties/", icon: "🏠", permission: "Properties" },
         { label: "Gallery", href: "/admin/gallery/", icon: "🖼️", permission: "Gallery" },
         { label: "Team", href: "/admin/team/", icon: "👥", permission: "Team" },
@@ -118,8 +124,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* Mobile top bar */}
+            <div className="md:hidden fixed top-0 left-0 w-full h-16 bg-gray-900 text-white flex items-center justify-between px-4 z-40 shadow-md">
+                <Link href="/" className="flex items-center gap-2">
+                    <img src={logoUrl} alt="PREM Properties" className="h-8 w-auto object-contain invert brightness-0" />
+                    <span className="font-bold">PREM Admin</span>
+                </Link>
+                <button
+                    onClick={() => setMobileNavOpen((open) => !open)}
+                    aria-label="Toggle menu"
+                    className="p-2 rounded-lg hover:bg-gray-800"
+                >
+                    {mobileNavOpen ? "✕" : "☰"}
+                </button>
+            </div>
+
+            {/* Overlay behind the mobile sidebar */}
+            {mobileNavOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    onClick={() => setMobileNavOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white flex flex-col">
+            <aside
+                className={`fixed left-0 top-0 h-full w-64 bg-gray-900 text-white flex flex-col z-50 transition-transform duration-300 ${mobileNavOpen ? "translate-x-0" : "-translate-x-full"
+                    } md:translate-x-0`}
+            >
                 <div className="p-6 flex flex-col items-center text-center border-b border-gray-800">
                     <Link href="/">
                         <img
@@ -159,7 +191,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </aside>
 
             {/* Main Content */}
-            <main className="ml-64 p-8">
+            <main className="md:ml-64 pt-20 px-4 pb-8 md:p-8">
                 {isLoaded ? children : <div className="text-center py-12">Loading...</div>}
             </main>
         </div>

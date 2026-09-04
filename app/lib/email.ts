@@ -47,8 +47,50 @@ export async function sendPasswordResetEmail(to: string, resetLink: string) {
 }
 
 /**
- * Send OTP login email
+ * Notify the admin inbox when a customer submits a contact or property enquiry
  */
+export async function sendInquiryNotificationEmail(inquiry: {
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    property?: string | null;
+}) {
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'premproperties1609@gmail.com';
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || '"PREM Properties" <noreply@premproperties.com>',
+        to: adminEmail,
+        replyTo: inquiry.email,
+        subject: inquiry.property
+            ? `New Property Enquiry: ${inquiry.property}`
+            : 'New Contact Form Submission',
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+                <h2 style="color: #333; text-align: center;">${inquiry.property ? 'New Property Enquiry' : 'New Contact Message'}</h2>
+                ${inquiry.property ? `<p><strong>Property:</strong> ${inquiry.property}</p>` : ''}
+                <p><strong>Name:</strong> ${inquiry.name}</p>
+                <p><strong>Email:</strong> ${inquiry.email}</p>
+                <p><strong>Phone:</strong> ${inquiry.phone}</p>
+                <p><strong>Message:</strong></p>
+                <p style="background: #f4f4f4; padding: 15px; border-radius: 5px;">${inquiry.message}</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="color: #999; font-size: 12px; text-align: center;">This is an automated notification from the PREM Properties website.</p>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Inquiry notification sent to ${adminEmail}`);
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error sending inquiry notification email:', error);
+        // Don't throw - a failed notification shouldn't fail the inquiry submission itself
+        return { success: false };
+    }
+}
+
 export async function sendOTPEmail(to: string, otp: string) {
     const mailOptions = {
         from: process.env.SMTP_FROM || '"PREM Properties" <noreply@premproperties.com>',

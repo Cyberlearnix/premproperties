@@ -10,7 +10,6 @@ export default function OTPLoginPage() {
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error' | '', message: string }>({ type: '', message: '' });
-    const [devOTP, setDevOTP] = useState<string>('');
 
     const handleRequestOTP = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,12 +27,6 @@ export default function OTPLoginPage() {
 
             if (response.ok) {
                 setStatus({ type: 'success', message: data.message });
-
-                // Show dev OTP in development
-                if (data.devOTP) {
-                    setDevOTP(data.devOTP);
-                }
-
                 setStep('otp');
             } else {
                 setStatus({ type: 'error', message: data.error || 'Failed to send OTP' });
@@ -98,14 +91,6 @@ export default function OTPLoginPage() {
                         </div>
                     )}
 
-                    {/* Dev OTP Display */}
-                    {devOTP && step === 'otp' && (
-                        <div className="mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
-                            <p className="text-sm font-bold text-yellow-900 mb-2">🔧 Development Mode</p>
-                            <p className="text-xs text-yellow-800 mb-2">Your OTP:</p>
-                            <code className="text-2xl font-bold bg-yellow-100 p-3 rounded block text-center">{devOTP}</code>
-                        </div>
-                    )}
 
                     {/* Email Step */}
                     {step === 'email' && (
@@ -170,7 +155,6 @@ export default function OTPLoginPage() {
                                 onClick={() => {
                                     setStep('email');
                                     setOtp('');
-                                    setDevOTP('');
                                     setStatus({ type: '', message: '' });
                                 }}
                                 className="w-full text-sm text-gray-600 hover:text-[var(--primary)] font-medium"

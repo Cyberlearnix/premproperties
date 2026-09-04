@@ -61,8 +61,8 @@ export default function Footer() {
         <div>
           <h3 className="text-sm font-bold uppercase tracking-widest mb-6 text-[var(--primary)]">Contact</h3>
           <ul className="space-y-3 text-sm text-gray-400">
-            <li>{contact.phone || "+91 888 557 5557"}</li>
-            <li>{contact.email || "info@premproperties.com"}</li>
+            <li>{contact.phone || "+91 89772 28322"}</li>
+            <li>{contact.email || "premproperties1609@gmail.com"}</li>
             <li>{contact.address || "Hyderabad, India"}</li>
           </ul>
         </div>

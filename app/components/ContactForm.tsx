@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
 
 export default function ContactForm() {
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -17,22 +17,23 @@ export default function ContactForm() {
         setStatus("loading");
 
         try {
-            const { error } = await supabase
-                .from("inquiries")
-                .insert([
-                    {
-                        ...formData,
-                        date: new Date().toISOString(),
-                        status: "new"
-                    }
-                ]);
+            const res = await fetch("/api/inquiries", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
 
-            if (error) throw error;
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to send message");
+            }
 
             setStatus("success");
             setFormData({ name: "", email: "", phone: "", message: "" });
-        } catch (error) {
+        } catch (error: any) {
             console.error("Submission error:", error);
+            setErrorMessage(error.message || "Failed to send message. Please try again.");
             setStatus("error");
         }
     };
@@ -101,7 +102,7 @@ export default function ContactForm() {
             </div>
 
             {status === "error" && (
-                <p className="text-red-500 text-sm font-bold text-center">Failed to send message. Please try again.</p>
+                <p className="text-red-500 text-sm font-bold text-center">{errorMessage || "Failed to send message. Please try again."}</p>
             )}
 
             <button

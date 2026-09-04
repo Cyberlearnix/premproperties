@@ -23,7 +23,7 @@ export default function FloatingWhatsApp() {
 
     return (
         <motion.a
-            href={`https://wa.me/916305203756?text=${message}`}
+            href={`https://wa.me/918977228322?text=${message}`}
             target="_blank"
             rel="noopener noreferrer"
             className="fixed z-50 w-14 h-14 hover:scale-110 transition-transform duration-300 drop-shadow-2xl"

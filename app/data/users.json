@@ -11,15 +11,20 @@
     "createdAt": "2025-12-20T22:42:36Z"
   },
   {
-    "username": "sridhar",
-    "email": "sridharuduthala@gmail.com",
-    "password": "admin123",
+    "username": "prem",
+    "email": "plingala301@gmail.com",
+    "password": "Lingala@1524",
     "role": "sub_admin",
     "permissions": [
       "Properties",
-      "Content"
+      "Settings",
+      "Content",
+      "Gallery",
+      "Inquiries",
+      "Media",
+      "Team"
     ],
-    "id": "1766253628810",
-    "createdAt": "2025-12-20T18:00:28.810Z"
+    "id": "1788527651029",
+    "createdAt": "2026-09-04T13:14:11.029Z"
   }
 ]

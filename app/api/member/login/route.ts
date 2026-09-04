@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "../../../lib/supabase";
+import { verifyPassword } from "../../../lib/password";
 
 export async function POST(request: Request) {
     try {
@@ -16,7 +17,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        if (member.password !== password) {
+        // Legacy plaintext accounts (created before hashing) compare directly
+        const isValidPassword = member.password.startsWith('$2')
+            ? await verifyPassword(password, member.password)
+            : password === member.password;
+
+        if (!isValidPassword) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 

@@ -25,12 +25,11 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 const memberRes = await fetch("/api/member/session");
                 const memberData = await memberRes.json();
                 setIsMember(memberData.authenticated);
-                console.log("DEBUG: Member authenticated:", memberData.authenticated);
 
-                // Check admin session (from cookies)
-                const isAdminSession = document.cookie.split('; ').some(row => row.startsWith('admin-session='));
-                setIsAdmin(isAdminSession);
-                console.log("DEBUG: Admin authenticated:", isAdminSession);
+                // Check admin session (httpOnly cookie, must go through API)
+                const adminRes = await fetch("/api/auth/session");
+                const adminData = await adminRes.json();
+                setIsAdmin(!!adminData.authenticated);
             } catch (e) {
                 console.error("Auth check failed:", e);
             }
@@ -47,7 +46,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 .single();
 
             if (data && !error) {
-                console.log("DEBUG: Full Property data:", data);
                 setProperty({
                     ...data,
                     id: String(data.id),

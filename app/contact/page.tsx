@@ -4,6 +4,14 @@ import ContactForm from "../components/ContactForm";
 
 import { fetchCompanyData } from "../lib/data";
 
+export const metadata = {
+    title: "Contact Us | PREM Properties - Kongara Kalan, Hyderabad",
+    description: "Get in touch with PREM Properties for real estate enquiries near Kongara Kalan, Future City, Adibatla, and Meerkanpet, Hyderabad. Call, WhatsApp, or visit us today.",
+    keywords: "contact PREM Properties, real estate agent Kongara Kalan, real estate near Future City",
+};
+
+export const dynamic = "force-dynamic";
+
 async function getData() {
     return fetchCompanyData();
 }
@@ -102,12 +110,13 @@ export default async function ContactPage() {
             {/* Map */}
             <section className="h-[400px] w-full">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1903.047535492817!2d78.5476483!3d17.3734057!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb98fb58000001%3A0x6b8c8c8c8c8c8c8c!2sJMR%20Jagini%20Plaza!5e0!3m2!1sen!2sin!4v1633000000000!5m2!1sen!2sin"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5235.722351587704!2d78.56282259465826!3d17.23342974423806!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcba53a806d8305%3A0x66014e09b75d15a3!2sKongarakalan%20Plots%20Sales%20%26%20Purchase!5e0!3m2!1sen!2sin!4v1788360531875!5m2!1sen!2sin"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     title="PREM Properties Office Location"
                 ></iframe>
             </section>
